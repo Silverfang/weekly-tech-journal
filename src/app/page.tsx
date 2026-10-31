@@ -1,36 +1,31 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { EDITIONS } from '@/data/mockEditions';
 import { Article, Edition } from '@/types/journal';
 import { Header } from '@/components/reader/Header';
 import { BentoGrid } from '@/components/reader/BentoGrid';
-import { ArticleSlidePanel } from '@/components/reader/ArticleSlidePanel';
 import { WeeklySummary } from '@/components/reader/WeeklySummary';
 import { EditorsNote } from '@/components/reader/EditorsNote';
 import { WeeklyArchive } from '@/components/reader/WeeklyArchive';
 import { Calendar, Layers, Sparkles } from 'lucide-react';
 
 export default function ReaderPage() {
+  const router = useRouter();
   const [currentEdition, setCurrentEdition] = useState<Edition>(EDITIONS[0]);
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
 
   const handleSelectArticle = (article: Article) => {
-    setSelectedArticle(article);
-  };
+  router.push(`/articles/${article.id}`);
+};
 
-  const handleCloseArticle = () => {
-    setSelectedArticle(null);
-  };
-
-  const handleSelectEdition = (edition: Edition) => {
-    setCurrentEdition(edition);
-    setSelectedArticle(null);
-  };
+const handleSelectEdition = (edition: Edition) => {
+  setCurrentEdition(edition);
+};
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] text-stone-900 flex flex-col selection:bg-stone-900 selection:text-white">
+    <div className="min-h-screen bg-paper text-stone-900 flex flex-col selection:bg-stone-900 selection:text-white">
       {/* Editorial Header */}
       <Header
         currentEdition={currentEdition}
@@ -38,7 +33,7 @@ export default function ReaderPage() {
       />
 
       {/* Main Content Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-16">
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-8 py-8 sm:py-12 space-y-16">
         {/* Edition Quick Notice */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-l-2 border-stone-900 pl-4 py-1 text-xs text-stone-600">
           <div className="flex items-center gap-2">
@@ -65,14 +60,14 @@ export default function ReaderPage() {
         />
 
         {/* Two-Column Editorial Features: 3. Weekly Summary & 4. Editor's Note */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 gap-8">
           {/* THE WEEK, IN 150 WORDS (PDF requirement #3) */}
-          <div className="lg:col-span-7">
+          <div>
             <WeeklySummary summary={currentEdition.weeklySummary} />
           </div>
 
           {/* FROM THE EDITOR (PDF requirement #4) */}
-          <div className="lg:col-span-5">
+          <div>
             <EditorsNote note={currentEdition.editorsNote} />
           </div>
         </div>
@@ -103,7 +98,7 @@ export default function ReaderPage() {
 
       {/* Editorial Footer */}
       <footer className="border-t border-stone-200 bg-stone-100/90 py-10 px-4 sm:px-8 text-xs text-stone-500">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <span className="font-editorial-display text-lg font-bold text-stone-900">
               WEEKLY TECH JOURNAL
@@ -118,14 +113,8 @@ export default function ReaderPage() {
         </div>
       </footer>
 
-      {/* 2. Slide-Out Article / Side Panel */}
-      <ArticleSlidePanel
-        article={selectedArticle}
-        isOpen={Boolean(selectedArticle)}
-        onClose={handleCloseArticle}
-        onSelectArticle={handleSelectArticle}
-        allArticles={currentEdition.stories}
-      />
+      
+      
 
       {/* 6. Weekly Archive Drawer */}
       <WeeklyArchive
